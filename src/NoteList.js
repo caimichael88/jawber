@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 
 import NoteCard from './NoteCard';
+import { getToken } from './utils/token';
 
 const useStyles = makeStyles(theme => ({
   heroContent: {
@@ -25,6 +26,30 @@ const cards = [1, 2, 3];
 
 export default function NoteList() {
   const classes = useStyles();
+  const [ notes, updateNotes ] = useState([]);
+
+  async function getNotes() {
+    try{
+      const token = getToken();
+
+      const response = await fetch('/api/notes', {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+  
+      const data = await response.json();
+      console.log(data);
+      updateNotes(data.data);
+    }catch(err) {
+      console.log(err);
+    }
+    
+  }
+
+  useEffect(() => {
+    getNotes();
+  }, []);
 
   return (
     <div>
@@ -47,7 +72,7 @@ export default function NoteList() {
       <Container className={classes.cardGrid} maxWidth="md">
         {/* End hero unit */}
         <Grid container spacing={4}>
-          {cards.map(card => <NoteCard />)}
+          {notes.map(note => <NoteCard key={note._id} text={note.text} />)}
         </Grid>
       </Container>
     </div>

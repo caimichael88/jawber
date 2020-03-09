@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const KEY = 'super secret key';
+const KEY = 'secret phrase';
 
 exports.createToken = (user) => {
   const token = jwt.sign(user, KEY);
